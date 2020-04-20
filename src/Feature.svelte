@@ -1,7 +1,7 @@
 <script>
   import { tweened } from "svelte/motion";
   import { interpolateLab } from "d3-interpolate";
-  import { rgb } from "d3-color";
+  import { hsl } from "d3-color";
   export let featurePath;
   export let initialColor;
 
@@ -17,7 +17,9 @@
   class="feature"
   fill={$color}
   on:mouseover={() => {
-    color.set(rgb(initialColor).brighter(0.3));
+    let newColor = hsl(initialColor);
+    newColor.l -= 0.2;
+    color.set(newColor);
   }}
   on:mouseout={() => {
     color.set(initialColor);

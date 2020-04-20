@@ -7,36 +7,31 @@
   import Feature from "./Feature.svelte";
   import json from "./counties.js";
 
-  const width = "960";
-  const height = "500";
   const path = geoPath();
 
-  let colorScale = () => {};
 
   const data = feature(json, json.objects.counties);
   const states = mesh(json, json.objects.states, (a, b) => a !== b);
-  console.log(states);
   const namesExtent = extent(data.features, d => d.properties.name.length);
-  colorScale = scaleLinear()
+  const colorScale = scaleLinear()
     .domain(namesExtent)
     .range(["#feedde", "#fd8d3c"]);
+
 
 </script>
 
 <style>
-  /* svg {
-    width: 960px;
-    height: 620px;
-    background-color: "#eeeeee";
-  } */
+  svg {
+    width: 100%;
+  }
 </style>
 
-<svg width="960" height="620">
+<svg width="960" height="auto" viewBox="0 0 975 610">
   <g>
     {#each data.features as feature}
-      <path 
-        d={path(feature)} 
-        fill={colorScale(feature.properties.name.length)} />
+      <Feature 
+        featurePath={path(feature)} 
+        initialColor={colorScale(feature.properties.name.length)} />
     {/each}
   </g>
   <path 
