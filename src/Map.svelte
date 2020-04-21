@@ -1,22 +1,31 @@
 <script>
-  import { geoAlbersUsa, geoPath } from "d3-geo";
-  import { scaleLinear } from "d3-scale";
-  import { extent } from "d3-array";
   import { onMount } from "svelte";
+  import { geoPath } from "d3-geo";
   import { feature, mesh } from "topojson";
   import Feature from "./Feature.svelte";
   import json from "./counties.js";
+  import { scalePow } from "d3-scale";
+  import {data, date, type, fetchData} from "./Store.js"
 
+  const defaultColor = "#EEEEEE"
   const path = geoPath();
-
-
-  const data = feature(json, json.objects.counties);
+  const counties = feature(json, json.objects.counties);
   const states = mesh(json, json.objects.states, (a, b) => a !== b);
-  const namesExtent = extent(data.features, d => d.properties.name.length);
-  const colorScale = scaleLinear()
-    .domain(namesExtent)
-    .range(["#feedde", "#fd8d3c"]);
 
+  onMount(() => {
+    fetchData();
+  })
+
+  $: colorScale = (id) => {
+    if ($data.entries[id] == null || $data.entries[id][$date] == null) {
+      return defaultColor;
+    }
+    let scale = scalePow()
+      .exponent(0.3)
+      .domain($data.ranges[$date][$type])
+      .range(["#feedde", "#fd8d3c"])
+    return scale($data.entries[id][$date][$type]);
+  }
 
 </script>
 
@@ -26,12 +35,14 @@
   }
 </style>
 
+<h1>test {$data.ranges[$date].deaths}</h1>
+
 <svg width="960" height="auto" viewBox="0 0 975 610">
   <g>
-    {#each data.features as feature}
+    {#each counties.features as feature (feature.id)}
       <Feature 
         featurePath={path(feature)} 
-        initialColor={colorScale(feature.properties.name.length)} />
+        initialColor={colorScale(feature.id)}/>
     {/each}
   </g>
   <path 

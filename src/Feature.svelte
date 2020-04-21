@@ -5,7 +5,7 @@
   export let featurePath;
   export let initialColor;
 
-  const color = tweened(initialColor, {
+  $: color = tweened(initialColor, {
     duration: 100,
     interpolate: interpolateLab
   });
