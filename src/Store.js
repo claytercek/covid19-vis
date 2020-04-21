@@ -22,7 +22,7 @@ export const fetchData = () => {
   }).then(function(d) {
     d.map((entry) => {
       if (entry.county === "New York City") {
-        entry.fips = "98765";
+        entry.fips = "98765"; // nyc fips by default is empty string
       }
       return entry;
     })
@@ -31,8 +31,6 @@ export const fetchData = () => {
       .key(function(d) { return d.date; })
       .rollup(function(v) { return v[0]; })
       .object(d);
-
-      console.log(entries["98765"])
 
     let ranges = nest()
       .key(function(d) { return d.date; })
@@ -71,3 +69,20 @@ export const latest = writable(""); // latest date
 // current vars
 export const date = writable("");
 export const type = writable("cases");
+
+
+export const tooltipPosition = writable([0,0]); 
+export const showTooltip = writable(false); 
+export const tooltipData = writable({
+  title: "title",
+  dat: [
+    {
+      key: "cases",
+      val: 0
+    },
+    {
+      key: "deaths",
+      val: 0
+    }
+  ]
+}); 

@@ -4,10 +4,8 @@
   import { feature, mesh } from "topojson";
   import Feature from "./Feature.svelte";
   import json from "./counties.js";
-  import { scalePow } from "d3-scale";
   import {data, date, type, fetchData} from "./Store.js"
 
-  const defaultColor = "#EEEEEE"
   const path = geoPath();
   const counties = feature(json, json.objects.counties);
   const states = mesh(json, json.objects.states, (a, b) => a !== b);
@@ -16,16 +14,6 @@
     fetchData();
   })
 
-  $: colorScale = (id) => {
-    if ($data.entries[id] == null || $data.entries[id][$date] == null) {
-      return defaultColor;
-    }
-    let scale = scalePow()
-      .exponent(0.3)
-      .domain($data.ranges[$date][$type])
-      .range(["#feedde", "#fd8d3c"])
-    return scale($data.entries[id][$date][$type]);
-  }
 
 </script>
 
@@ -42,13 +30,15 @@
     {#each counties.features as feature (feature.id)}
       <Feature 
         featurePath={path(feature)} 
-        initialColor={colorScale(feature.id)}/>
+        title={feature.properties.name}
+        id={feature.id} />
     {/each}
   </g>
   <path 
     d={path(states)} 
     fill="none"
+    style="pointer-events:none;"
     stroke="white"
     stroke-linejoin="round"
-    stroke-width="2" />
+    stroke-width="1px" />
 </svg>
